@@ -16,9 +16,9 @@ The Hangman game is a sequential word-guessing problem that requires balancing e
 
 ### 1. Forward LM Scoring
 
-A Transformer-based forward language model trained with a next-character prediction objective. The model predicts the probability distribution $P_\text{fwd}(c_t \mid c_{<t})$ for the next character given the current prefix, so the full word probability is:
+A Transformer-based forward language model trained with a next-character prediction objective. The model predicts the probability distribution $P_{\text{fwd}}(c_t \mid c_{<t})$ for the next character given the current prefix, so the full word probability is:
 
-$$P_\text{fwd}(w) = \prod_{t=1}^{\lvert w \rvert} P_\text{fwd}(c_t \mid c_{<t})$$
+$$P_{\text{fwd}}(w) = \prod_{t=1}^{\lvert w \rvert} P_{\text{fwd}}(c_t \mid c_{<t})$$
 
 The letter with the highest softmax probability among unguessed letters is chosen at each step.
 
@@ -26,9 +26,9 @@ The letter with the highest softmax probability among unguessed letters is chose
 
 The forward LM optimizes local next-character likelihoods $P(c_t \mid c_{<t})$ rather than the Hangman objective $P(a \in w \mid X)$. To address this, constrained beam search generates candidate words consistent with the current game state (revealed letters, known misses, word length), and their cumulative log-likelihoods are converted into a posterior over words:
 
-$$s_\text{beam}(w) = \sum_{t=1}^{\lvert w \rvert} \log P_\text{beam}(c_t \mid c_{<t})$$
+$$s_{\text{beam}}(w) = \sum_{t=1}^{\lvert w \rvert} \log P_{\text{beam}}(c_t \mid c_{<t})$$
 
-$$P(w \mid X) = \frac{P(X \mid w)\exp(s_\text{beam}(w)/T)}{\sum_{w'} P(X \mid w')\exp(s_\text{beam}(w')/T)}$$
+$$P(w \mid X) = \frac{P(X \mid w)\exp(s_{\text{beam}}(w)/T)}{\sum_{w'} P(X \mid w')\exp(s_{\text{beam}}(w')/T)}$$
 
 Because the beam search enforces strict length, position, and letter constraints, each surviving candidate is almost perfectly consistent with the observation, so $P(X \mid w) \approx 1$. From this posterior, the marginal hit probability and expected number of reveals for each letter $a$ are:
 
@@ -40,15 +40,15 @@ The letter maximizing this posterior utility is selected, leveraging global word
 
 To capture both left-to-right and right-to-left context, forward and backward LMs generate two candidate sets independently. Each candidate word is then re-scored by computing its exact autoregressive log-likelihood under both models:
 
-$$s_\text{fwd}(w) = \sum_{t=1}^{\lvert w \rvert} \log P_\text{fwd}(c_t \mid c_{<t}), \qquad s_\text{bwd}(w) = \sum_{t=1}^{\lvert w \rvert} \log P_\text{bwd}(c_t \mid c_{>t})$$
+$$s_{\text{fwd}}(w) = \sum_{t=1}^{\lvert w \rvert} \log P_{\text{fwd}}(c_t \mid c_{<t}), \qquad s_{\text{bwd}}(w) = \sum_{t=1}^{\lvert w \rvert} \log P_\text{bwd}(c_t \mid c_{>t})$$
 
 The two scores are blended into a single bidirectional score:
 
-$$s_\text{bi}(w) = \alpha\, s_\text{fwd}(w) + (1-\alpha)\, s_\text{bwd}(w)$$
+$$s_{\text{bi}}(w) = \alpha\, s_{\text{fwd}}(w) + (1-\alpha)\, s_{\text{bwd}}(w)$$
 
 where $\alpha \in [0, 1]$ controls the weighting between the two directions. The combined score is normalized into a posterior:
 
-$$P_\text{bi}(w \mid X) = \frac{\exp(s_\text{bi}(w)/T)}{\sum_{w'} \exp(s_\text{bi}(w')/T)}$$
+$$P_{\text{bi}}(w \mid X) = \frac{\exp(s_{\text{bi}}(w)/T)}{\sum_{w'} \exp(s_{\text{bi}}(w')/T)}$$
 
 ---
 

@@ -18,7 +18,7 @@ The Hangman game is a sequential word-guessing problem that requires balancing e
 
 A Transformer-based forward language model trained with a next-character prediction objective. The model predicts the probability distribution $P_{\text{fwd}}(c_t \mid c_{<t})$ for the next character given the current prefix, so the full word probability is:
 
-$$P_{\text{fwd}}(w) = \prod_{t=1}^{\lvert w \rvert} P_{\text{fwd}}(c_t \mid c_{<t})$$
+$P_{\text{fwd}}(w) = \prod_{t=1}^{|w|} P_{\text{fwd}}(c_t \mid c_{<t}$
 
 The letter with the highest softmax probability among unguessed letters is chosen at each step.
 

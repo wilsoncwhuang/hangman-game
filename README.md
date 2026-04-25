@@ -26,7 +26,7 @@ The letter with the highest softmax probability among unguessed letters is chose
 
 The forward LM optimizes local next-character likelihoods $P(c_t \mid c_{<t})$ rather than the Hangman objective $P(a \in w \mid X)$. To address this, constrained beam search generates candidate words consistent with the current game state (revealed letters, known misses, word length), and their cumulative log-likelihoods are converted into a posterior over words:
 
-$$s_{\text{beam}}(w) = \sum_{t=1}^{|w|} \log P_{\text{beam}}(c_t \mid c_{<t})$$
+$s_{\text{beam}}(w) = \sum_{t=1}^{|w|} \log P_{\text{beam}}(c_t \mid c_{<t})$
 
 $$P(w \mid X) = \frac{P(X \mid w)\exp(s_{\text{beam}}(w)/T)}{\sum_{w'} P(X \mid w')\exp(s_{\text{beam}}(w')/T)}$$
 
